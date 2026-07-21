@@ -1,2 +1,2 @@
-# record personal project step by step
+# record personal practices 
 
