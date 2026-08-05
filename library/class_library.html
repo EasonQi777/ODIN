@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+	<form id="book-form">
+		<input type="text" id="title">
+		<input type="text" id="author">
+		<input type="number" id="pages">
+		<input type="checkbox" id="read">Read
+		<button>Add Book</button>
+		<table id="libaray-table">
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Author</th>
+					<th>Pages</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody class="library"></tbody>
+		</table>
+
+	</form>
+    <script>
+        const myLibrary = [];
+
+		class Book {
+			constructor(title, author, pages, read) {
+				this.id = crypto.randomUUID();
+				this.title = title;
+				this.author = author;
+				this.pages = pages;
+				this.read = read;
+			}
+            
+			toggleReadStatus() {
+				this.read = !this.read;
+			}
+
+		}
+        
+		function addBooktoLibrary(title, author, pages, read) {
+			const book = new Book(title, author, pages, read);
+			myLibrary.push(book);
+		};
+
+		const libraryContainer = document.querySelector(".library");
+
+		function displayBook() {
+			libraryContainer.innerHTML = "";
+			myLibrary.forEach(book => {
+              libraryContainer.innerHTML += `
+			  <tr>
+			   <td>${book.title}</td>
+			   <td>${book.author}</td>
+			   <td>${book.pages}</td>
+			   <td>${book.read ? "Read" : "Not Read"}</td>
+			   <td>
+				 <button type="button" data-id="${book.id}" data-action="toggle">
+				   ${book.read ? "Read" : "Not Read"}
+				 </button>
+			   </td>
+			   <td>
+				 <button type="button" data-id="${book.id}" data-action="remove">Remove</button>
+			   </td>
+			  </tr> 
+			  `;
+			});
+		};
+
+		const form = document.querySelector("#book-form");
+		form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+			const titleInput = document.querySelector("#title").value;
+			const authorInput = document.querySelector("#author").value;
+			const pagesInput = Number(document.querySelector("#pages").value);
+			const readInput = document.querySelector("#read").checked;
+            
+			addBooktoLibrary(titleInput, authorInput, pagesInput, readInput);
+			displayBook();
+
+		});
+
+		function removeBook(id) {
+			const index = myLibrary.findIndex(book => book.id === id);
+			myLibrary.splice(index, 1);
+		};
+
+		libraryContainer.addEventListener('click', (e) => {
+			const button = e.target.closest("button[data-id]");
+			if (!button) return;
+
+			const id = button.dataset.id;
+			const book = myLibrary.find(book => book.id === id);
+			if (!book) return;
+
+			if (button.dataset.action === "toggle") {
+				book.toggleReadStatus();
+			}
+
+			if (button.dataset.action === "remove") {
+				removeBook(id);
+			}
+
+			displayBook();
+		});
+
+		
+     
+
+
+
+		
+
+	</script>
+  </body>
+</html>
