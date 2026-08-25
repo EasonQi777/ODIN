@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>get api</title>
+	</head>
+	<body>
+		<input type="text" id="searchInput" placeholder="search ..." />
+		<button id="searchBtn">search</button>
+		<ul id="resultList"></ul>
+
+		<script>
+			const searchInput = document.querySelector('#searchInput');
+			const searchBtn = document.querySelector('#searchBtn');
+			const resultList = document.querySelector('#resultList');
+			const API_KEY = "2GGwfLQrTrjxzfWDDloTC6nqStE9MTbN";
+
+			function searchGifs() {
+				const keyword = searchInput.value;
+				if (!keyword) {
+					return;
+				};
+
+				resultList.innerHTML = "";
+
+				fetch(
+					`https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${keyword}`
+				) .then(function(response1) {
+					if (!response1.ok) {
+						throw new Error(`Request failed: ${response1.status} ${response1.statusText}`);
+					}
+					return response1.json();
+				}) .then(function(data) {
+					if (!data.data || data.data.length === 0) {
+						const li = document.createElement("li");
+						li.textContent = "No Gifs found";
+						resultList.appendChild(li);
+						return;
+					}
+					data.data.forEach(function(gif) {
+						const li = document.createElement("li");
+						const img = document.createElement("img");
+						img.src = gif.images.original.url;
+						img.alt = gif.title;
+						li.appendChild(img);
+						resultList.appendChild(li);
+					});
+				});
+			}
+
+			searchBtn.addEventListener("click", searchGifs);
+
+
+		</script>
+	</body>
+</html>
